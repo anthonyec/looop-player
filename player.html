@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Looop Document</title>
+</head>
+<body>
+  <script>
+    (function() {
+      const methods = {
+        updateUserCode: function(code) {
+          const script = document.createElement('script');
+          const controllerCode = `
+            console.log('iframe: init internal code');
+
+            try {
+              setup();
+            } catch(err) {
+              console.error('iframe: setup error!', err);
+            }
+
+            function internalLoop() {
+              try {
+                loop();
+                requestAnimationFrame(internalLoop);
+              } catch(err) {
+                console.error('iframe: loop error!', err);
+              }
+            }
+            requestAnimationFrame(internalLoop);
+          `;
+
+          script.setAttribute('id', 'looopUserCode');
+          script.innerHTML = `
+            (function() {
+              try {
+                ${code}
+                ${controllerCode}
+              } catch(err) {
+                console.error('iframe: error!', err);
+              }
+            })();
+          `;
+
+          document.body.appendChild(script);
+        }
+      };
+
+      function handleMessageReceived(evt) {
+        const { data } = evt;
+
+        if (data.type) {
+          methods[data.type](data.payload);
+        }
+      }
+
+      window.addEventListener('message', handleMessageReceived, false);
+
+      console.log('iframe: init');
+    })();
+  </script>
+</body>
+</html>

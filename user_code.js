@@ -1,0 +1,65 @@
+const settings = {
+
+};
+
+// START_LOOOP_USER_CODE
+const { canvas, canvasWidth, canvasHeight } = settings;
+
+const setup = () => {
+  const context = canvas.getContext('2d');
+
+  return { context };
+}
+
+function drawRect(context, fill) {
+  console.log('canvasHeight', canvasHeight)
+  context.fillStyle = fill;
+  context.fillRect(0, 0, canvasWidth, canvasHeight);
+  context.fill();
+}
+
+function drawCircles(context, centerX, centerY, fill, center, radius, x, y, count) {
+  let angle = 0;
+
+  for (let i = 0; i < count; i++) {
+    angle += Math.atan2(x, y);
+
+    const circleX = centerX + (centerX * Math.cos(angle) * center);
+    const circleY = centerY + (centerY * Math.sin(angle) * center);
+
+    context.beginPath();
+
+    // x, y, radius, startAngle, endAngle
+    context.arc(circleX, circleY, radius / (3), 0, 2 * Math.PI);
+
+    context.fillStyle = fill;
+    context.fill();
+  }
+}
+
+const loop = ({ context }, inputValues, totalTime, loopCount) => {
+  const { radius, center, x, y, count } = inputValues;
+    const centerX = canvasWidth / 2;
+    const centerY = canvasHeight / 2;
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    if (loopCount % 2) {
+      drawRect(context, 'rgba(21, 178, 194, 1)');
+      drawCircles(context, centerX, centerY, 'rgba(247, 201, 44, 0.2)', center, radius, x, y, count);
+    } else {
+      drawRect(context, 'rgba(247, 201, 44, 1)');
+      drawCircles(context, centerX, centerY, 'rgba(21, 178, 194, 0.2)', center, radius, x, y, count);
+    }
+}
+// END_LOOOP_USER_CODE
+
+(() => {
+  let requestAnimationFrameId = null;
+
+  function internalLoop() {
+    loop();
+    requestAnimationFrameId = requestAnimationFrame(internalLoop);
+  }
+
+  requestAnimationFrameId = requestAnimationFrame(internalLoop);
+});

@@ -1,0 +1,44 @@
+<div class="player"></div>
+
+<script src="looop-player.js"></script>
+
+<br>
+
+<textarea cols="30" rows="10">
+function setup() {
+  console.log('setup 2');
+  }
+
+function loop() {
+  console.log('loop 2');
+}
+</textarea>
+<button>Update</button>
+
+<script>
+  const player = new LooopPlayer({
+    el: document.querySelector('.player'),
+    controllerCode: `
+      
+    `
+  });
+
+  const textarea = document.querySelector('textarea');
+  const updateButton = document.querySelector('button');
+
+  updateButton.addEventListener('click', () => {
+    player.updateUserCode(textarea.value);
+  });
+
+  setTimeout(() => {
+    player.updateUserCode(`
+      function setup() {
+        console.log('setup');
+      }
+
+      function loop() {
+        console.log('loop');
+      }
+    `);
+  }, 500);
+</script>
